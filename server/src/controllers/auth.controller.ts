@@ -2,7 +2,7 @@ import {Request , Response} from "express";
 import {prisma} from "../config/prisma";
 import bcrypt from "bcrypt";
 import {generateAccessToken, generateRefreshToken} from "../utils/jwt";
-
+import { AuthRequest } from "../middleware/auth.middleware";
 export async function register(req: Request, res: Response) {
     try{
         const{email, password,name} = req.body;
@@ -71,4 +71,21 @@ export async function login(req: Request, res: Response) {
         console.error(error);
         return res.status(500).json({message:"Internal server error"});
     }
+}
+
+export async function getProfile(req:AuthRequest,res:Response){
+     try{
+        const user= await prisma.user.findUnique({where:{id:req.user!.userId},
+        select:{id:true,email:true,name:true,createdAt:true,updatedAt:true}});
+
+
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+        return res.json({user});
+     }
+     catch(error){
+        console.error(error);
+        return res.status(500).json({message:"Internal server error"});
+     }  
 }
