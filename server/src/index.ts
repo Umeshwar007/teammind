@@ -17,11 +17,14 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors:{
-        origin:"http://localhost:3000",
+        origin:"http://localhost:5173",
         methods:["GET","POST"],
     },
 });
-app.use(cors());
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
@@ -35,6 +38,7 @@ app.get("/",(req,res)=>{
 io.use(socketAuthMiddleware);
 io.on("connection",(socket:AuthSocket)=>{
     console.log("A user connected: " ,socket.user?.email);
+    registerChatHandlers(io,socket);
     socket.on("disconnect",()=>{
         console.log("A user disconnected: " ,socket.user?.email);
     });
