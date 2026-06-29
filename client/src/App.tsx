@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useSocketConnection } from "./hooks/usesocketconnection";
 function App() {
+  useSocketConnection();
   return (
     <BrowserRouter>
       <Routes>
