@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+
  export interface SignupData{
     email:string;
     password:string;
@@ -18,4 +19,8 @@ import axiosInstance from "./axiosInstance";
  export async function loginApi(data:LoginData){
     const response= await axiosInstance.post("/api/auth/login",data);
     return response.data;
+ }
+ export async function refreshApi(){
+   const response = await axiosInstance.post("/api/auth/refresh");
+   return response.data;
  }

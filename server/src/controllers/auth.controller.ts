@@ -2,6 +2,7 @@ import {Request , Response} from "express";
 import {prisma} from "../config/prisma";
 import bcrypt from "bcrypt";
 import {generateAccessToken, generateRefreshToken} from "../utils/jwt";
+import {verifyRefreshToken} from "../utils/jwt";
 import { AuthRequest } from "../middleware/auth.middleware";
 export async function register(req: Request, res: Response) {
     try{
@@ -88,4 +89,25 @@ export async function getProfile(req:AuthRequest,res:Response){
         console.error(error);
         return res.status(500).json({message:"Internal server error"});
      }  
+}
+export async function refresh (req:Request, res:Response){
+    try{
+      const token= req.cookies.refreshToken;
+      if(!token){
+        return res.status(401).json({message:"No refresh token"});
+      }
+      const payload= verifyRefreshToken(token);
+      const user= await prisma.user.findUnique({where:{id:payload.userId}});
+      if(!user){
+        return res.status(401).json({message:"User not found"});
+      }
+      const newAccessToken= generateAccessToken({userId:user.id,email:user.email});
+      return res.status(200).json({
+        accessToken:newAccessToken,
+        user:{id:user.id,email:user.email,name:user.name},
+      });
+    }
+    catch(error){
+        return res.status(401).json({message: "Invalid refresh token"});
+    }
 }
