@@ -29,6 +29,7 @@ export function registerChatHandlers (io:Server ,socket:AuthSocket){
     });
     socket.on("typing",(data:{channelId:string})=>{
         socket.to(data.channelId).emit("user_typing",{
+            channelId:data.channelId,
             userId:socket.user?.userId,
             email:socket.user?.email,
         });
