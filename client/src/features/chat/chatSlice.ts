@@ -3,7 +3,7 @@ import {createSlice , type PayloadAction} from "@reduxjs/toolkit";
 export interface Message{
     id:string;
     content : string;
-    isApiReply:boolean;
+    isAiReply:boolean;
     createdAt:string;
     channelId:string;
     authorId:string;
