@@ -1,4 +1,4 @@
-import { Response } from  "express";
+import e, { Response } from  "express";
 import { prisma } from "../config/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 
@@ -53,6 +53,23 @@ export async function deleteChannel(req: AuthRequest, res: Response) {
         return res.status(204).send();
     } catch (error) {
         console.error("Error deleting channel:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export async function getMessages(req: AuthRequest, res: Response) {
+    try{
+        const channelId = req.params;
+        const messages= await prisma.message.findMany({
+            where:{channelId},
+            orderBy:{createdAt: "asc"},
+            include:{
+                author:{select:{id:true,name:true,email:true}}
+            }
+        });
+        return res.status(200).json({messages});
+    } catch (error) {
+        console.error("Error fetching messages:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
